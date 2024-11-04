@@ -3,6 +3,7 @@ const container = document.querySelector('.container');
 const body = document.querySelector('.main');
 const loader = document.querySelector('.loader');
 const formContainer = document.querySelector('.form-container');
+let searchController;
 // Los paises descargados desde la api se guardan en el array de countries
 // La api deberia pedirse solo una vez
 // Usar este array para crear el filtrado
@@ -28,21 +29,25 @@ const getCountries = async () => {
 getCountries();
 
 searchInput.addEventListener('input', async e => {
-  console.log('papa')
   // Toda la logica del desafio va dentro del evento del input.
   const inputText = searchInput.value.toUpperCase().trim();
 
-  const filtrados = countries.filter(pais => pais.name.common.toUpperCase().startsWith(inputText));
+   // Cancelar solicitud anterior si existe
+  if (searchController) {
+    searchController.abort();
+  }
+  searchController = new AbortController();
 
+  const filtrados = countries.filter(pais => pais.name.common.toUpperCase().startsWith(inputText));
   container.innerHTML = '';
 
   if (filtrados.length < 10 && filtrados.length != 1) {
     filtrados.forEach(countrie => {
       const div = document.createElement('div');
-      div.classList.add('countries');
+      div.classList.add('countries-ten');
 
       div.innerHTML = `
-        <div class="flag-container">
+        <div class="flag-container-ten">
           <img src="${countrie.flags.svg}" alt="" class="flags">
         </div>
         <div class="info-container">
